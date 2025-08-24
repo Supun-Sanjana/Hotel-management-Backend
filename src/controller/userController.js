@@ -1,5 +1,7 @@
-import userSchema from '../model/user.js'
+import User from "../model/user.js";
+
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken'
 
 
 //register user
@@ -18,7 +20,7 @@ export const register = async (req, res) => {
         const salt = bcrypt.genSaltSync(10);
         const hashPassword = bcrypt.hashSync(password, salt);
 
-        const user = new userSchema({
+        const user = new User({
             firstName,
             lastName,
             userName,
@@ -28,12 +30,45 @@ export const register = async (req, res) => {
 
         const savaData = await user.save()
         res.status(201).json({
-                success: true,
-                message: "User saved success !"
-            })
+            success: true,
+            message: "User saved success !"
+        })
     } catch (err) {
         console.log(err);
 
     }
 
+}
+
+//login
+export const login = async (req, res) => {
+    try {
+
+        const { userName, password } = req.body;
+
+        if (!userName || !password) {
+            res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            })
+        }
+
+        const user =await User.findOne({ userName })
+        if (!user) return res.status(404).json({ message: "User not found !" })
+
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch) return res.status(400).json({ success: false, message: "Invalid credentials" })
+
+        const token = jwt.sign({ id: user._id, userName },
+            process.env.JWT_SECRET,
+            { expiresIn: "72h" }
+        )
+
+        return res.status(200).json({ message: "Login success", token })
+
+
+    } catch (error) {
+        console.log(error);
+
+    }
 }
