@@ -15,4 +15,6 @@ const gallerySchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export default mongoose.model('Gallery', gallerySchema);
+const Gallery = mongoose.model('Gallery', gallerySchema);
+
+export default Gallery;

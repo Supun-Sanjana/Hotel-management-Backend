@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRoute from './src/router/userRoute.js'
+import galleryRouter from './src/router/galleryRoute.js'
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,7 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
 const PORT = process.env.SERVER_PORT
 
 app.use("/api/v1", userRoute)
+app.use("/api/v1/gallery", galleryRouter)
 
 app.listen(PORT, (req, res) => {
     console.log(`server is running on port ${PORT}`);

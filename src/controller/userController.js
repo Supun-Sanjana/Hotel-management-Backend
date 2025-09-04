@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 
 
-//register user
+//register
 export const register = async (req, res) => {
 
     try {
@@ -54,6 +54,8 @@ export const login = async (req, res) => {
         }
 
         const user =await User.findOne({ userName })
+        //const credentials = req.body
+        //User.findOne({username : credentials.uername , password : credentials.password})
         if (!user) return res.status(404).json({ message: "User not found !" })
 
         const isMatch = await bcrypt.compare(password, user.password)
