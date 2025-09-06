@@ -3,7 +3,16 @@ import Gallery from "../model/gallery.js";
 
 //create gallery item
 export function createGallery(req, res) {
-    const galleryItem = req.body;
+    const user = req.body.user
+
+    if (!user) {
+        return res.status(401).json({ message: "Please login to create gallery item" });
+    }
+    // if (user.type !== "admin") {
+    //     return res.status(403).json({ message: "You are not authorized to create gallery item" });
+    // }  
+
+    const galleryItem = req.body.item;
 
     const newGalleryItem = new Gallery(galleryItem);
 

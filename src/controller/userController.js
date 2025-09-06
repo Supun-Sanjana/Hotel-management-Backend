@@ -3,10 +3,8 @@ import User from "../model/user.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 
-
 //register
 export const register = async (req, res) => {
-
     try {
         const { firstName, lastName, userName, email, password } = req.body
 
@@ -17,8 +15,8 @@ export const register = async (req, res) => {
             })
         }
 
-        const salt = bcrypt.genSaltSync(10);
-        const hashPassword = bcrypt.hashSync(password, salt);
+        // const salt = bcrypt.genSaltSync(10);
+        const hashPassword = bcrypt.hashSync(password, 10);
 
         const user = new User({
             firstName,
@@ -53,7 +51,7 @@ export const login = async (req, res) => {
             })
         }
 
-        const user =await User.findOne({ userName })
+        const user = await User.findOne({ userName })
         //const credentials = req.body
         //User.findOne({username : credentials.uername , password : credentials.password})
         if (!user) return res.status(404).json({ message: "User not found !" })
@@ -61,7 +59,7 @@ export const login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) return res.status(400).json({ success: false, message: "Invalid credentials" })
 
-        const token = jwt.sign({ id: user._id, userName },
+        const token = jwt.sign({ id: user._id, userName, type: user.type },
             process.env.JWT_SECRET,
             { expiresIn: "72h" }
         )
