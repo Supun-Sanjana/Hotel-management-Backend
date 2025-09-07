@@ -57,6 +57,11 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
 
 const PORT = process.env.PORT || process.env.SERVER_PORT || 5000;
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Backend is alive ✅" });
+});
+
+
 app.use("/api/v1", userRoute)
 app.use("/api/v1/gallery", galleryRouter)
 app.use("/api/v1/category", categoryRouter)
