@@ -2,12 +2,12 @@ import Category from "../model/category.js";
 
 //Create category
 export function createCategory(req, res){
-    if (req.user == null) {
+    if (req.body.user == null) {
         return res.status(401).json({
             message:"Please login to create category !"
         })
     }
- 
+
     const newCategory = new Category(req.body)
     newCategory.save().then(
         (result)=>{
@@ -20,6 +20,61 @@ export function createCategory(req, res){
         (err)=>{
             res.json({
                 message:"Category creation failed",
+                error:err
+            })
+        }
+    )
+}
+
+//delete category
+export function deleteCategory(req, res) {
+    if (!req.body.user) {
+        return res.status(401).json({
+            message: "Please login to delete category !"
+        });
+    }
+
+    if (req.body.user.type !== "admin") {
+        return res.status(403).json({
+            message: "You are not authorized to delete category !"
+        });
+    }
+
+    const name = req.params.name;
+
+    Category.findOneAndDelete({ name })
+        .then((deletedCategory) => {
+            if (!deletedCategory) {
+                return res.status(404).json({
+                    message: "Category not found"
+                });
+            }
+            res.status(200).json({
+                message: "Category deleted successfully",
+                deletedCategory
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                message: "Category deletion failed",
+                error: err.message
+            });
+        });
+}
+
+
+//get all categories
+export function getAllCategories(req, res) {
+    Category.find().then(
+        (list)=>{
+            res.json({
+                list:list
+            })
+        }
+    ).catch(
+        (err)=>{
+            res.json({
+                message:"Category get failed",
                 error:err
             })
         }

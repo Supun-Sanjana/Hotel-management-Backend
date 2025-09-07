@@ -23,7 +23,8 @@ export const register = async (req, res) => {
             lastName,
             userName,
             email,
-            password: hashPassword
+            password: hashPassword,
+            type: req.body.type
         })
 
         const savaData = await user.save()
