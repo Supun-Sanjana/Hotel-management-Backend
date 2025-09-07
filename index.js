@@ -12,21 +12,21 @@ const app = express();
 app.use(express.json());
 
 // JWT middleware
-app.use((req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+// app.use((req, res, next) => {
+//   const token = req.header("Authorization")?.replace("Bearer ", "");
 
-  if (!token) return next();
+//   if (!token) return next();
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      console.log("JWT verification failed:", err.message);
-      return next();
-    }
-    req.body.user = decoded;
-    console.log("Decoded JWT:", decoded);
-    next();
-  });
-});
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//     if (err) {
+//       console.log("JWT verification failed:", err.message);
+//       return next();
+//     }
+//     req.body.user = decoded;
+//     console.log("Decoded JWT:", decoded);
+//     next();
+//   });
+// });
 
 // MongoDB
 mongoose.connect(process.env.MONGODB_URL)
