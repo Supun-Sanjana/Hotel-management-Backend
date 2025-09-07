@@ -1,15 +1,15 @@
 import express from 'express';
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import userRoute from './src/router/userRoute.js';
-import galleryRouter from './src/router/galleryRoute.js';
-import categoryRouter from './src/router/categoryRoute.js';
-import jwt from "jsonwebtoken";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import userRoute from './src/router/userRoute.js';
+// import galleryRouter from './src/router/galleryRoute.js';
+// import categoryRouter from './src/router/categoryRoute.js';
+// import jwt from "jsonwebtoken";
 
-dotenv.config();
+// dotenv.config();
 const app = express();
 
-app.use(express.json());
+// app.use(express.json());
 
 // JWT middleware
 // app.use((req, res, next) => {
@@ -29,9 +29,9 @@ app.use(express.json());
 // });
 
 // MongoDB
-mongoose.connect(process.env.MONGODB_URL)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch(err => console.error("❌ Error connecting to MongoDB:", err));
+// mongoose.connect(process.env.MONGODB_URL)
+//   .then(() => console.log("✅ Connected to MongoDB"))
+//   .catch(err => console.error("❌ Error connecting to MongoDB:", err));
 
 const PORT = process.env.PORT || process.env.SERVER_PORT || 5000;
 
@@ -40,10 +40,10 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Backend is alive ✅" });
 });
 
-// Routes
-app.use("/api/v1", userRoute);
-app.use("/api/v1/gallery", galleryRouter);
-app.use("/api/v1/category", categoryRouter);
+// // Routes
+// app.use("/api/v1", userRoute);
+// app.use("/api/v1/gallery", galleryRouter);
+// app.use("/api/v1/category", categoryRouter);
 
 // Start server
 app.listen(PORT, () => {
