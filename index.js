@@ -55,8 +55,7 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
 
 
 
-
-const PORT = process.env.SERVER_PORT || 5000
+const PORT = process.env.PORT || process.env.SERVER_PORT || 5000;
 
 app.use("/api/v1", userRoute)
 app.use("/api/v1/gallery", galleryRouter)
