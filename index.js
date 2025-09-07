@@ -12,35 +12,22 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    if (token != null) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-            if (decoded != null) {
-                req.body.user = decoded; // attach user payload to request
-                console.log("Decoded JWT:", decoded);
-                next();
-            }else{
-                next();
-            }
-        })
-    }else{
-        next();
+  if (!token) {
+    return next(); // no token → just move on
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log("JWT verification failed:", err.message);
+      return next(); // invalid/expired token → continue without user
     }
 
-    // if (!token) {
-    //     return res.status(401).json({ error: "Access denied. No token provided." });
-    // }
-
-    // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    //     if (err) {
-    //         return res.status(403).json({ error: "Invalid or expired token" });
-    //     }
-
-    //     req.body.user = decoded; // attach user payload to request
-    //     console.log("Decoded JWT:", decoded);
-    //     next();
-    // });
+    req.body.user = decoded;
+    console.log("Decoded JWT:", decoded);
+    next();
+  });
 });
 
 
