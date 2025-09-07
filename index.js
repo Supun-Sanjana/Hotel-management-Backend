@@ -53,7 +53,7 @@ app.use("/api/v1", userRoute)
 app.use("/api/v1/gallery", galleryRouter)
 app.use("/api/v1/category", categoryRouter)
 
-app.listen(PORT, (req, res) => {
+app.listen(PORT, () => {
     console.log(`--------> Server is running on port ${PORT}`);
 
 })
