@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import userRoute from './src/router/userRoute.js'
 import galleryRouter from './src/router/galleryRoute.js'
+import categoryRouter from './src/router/categoryRoute.js'
 dotenv.config();
 import jwt from "jsonwebtoken"
 
@@ -55,10 +56,11 @@ mongoose.connect(process.env.MONGODB_URL).then(() => {
 
 
 
-const PORT = process.env.SERVER_PORT
+const PORT = process.env.SERVER_PORT || 5000
 
 app.use("/api/v1", userRoute)
 app.use("/api/v1/gallery", galleryRouter)
+app.use("/api/v1/category", categoryRouter)
 
 app.listen(PORT, (req, res) => {
     console.log(`--------> Server is running on port ${PORT}`);
