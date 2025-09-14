@@ -80,3 +80,52 @@ export function getAllCategories(req, res) {
         }
     )
 }
+
+//get category by name
+export function getCategoryByName(req, res) {
+    const name = req.params.name;
+
+    Category.findOne({ name }).then(
+        (category)=>{
+            if (!category) {
+                return res.status(404).json({
+                    message: "Category not found"
+                });
+            }
+            res.json({
+                category:category
+            })
+        }
+    ).catch(
+        (err)=>{
+            res.json({
+                message:"Category get failed",
+                error:err
+            })
+        }
+    )
+}
+
+export function updateCategory(req, res) {
+
+    const adminValid = isAdminValid(req);
+
+    if (!adminValid) {
+        res.status(403).json({
+            message:"Unautherize !"
+        })
+    }
+
+
+}
+
+const isAdminValid = (req)=>{
+    if (!req.body.user) {
+        return false
+    }
+
+    if (req.body.user.type !== "admin") {
+        return fale
+    }
+    return true
+}
