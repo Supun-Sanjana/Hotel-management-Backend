@@ -1,4 +1,5 @@
 import Category from "../model/category.js";
+import { isAdminValid } from "./userController.js";
 
 //Create category
 export function createCategory(req, res) {
@@ -61,7 +62,6 @@ export function deleteCategory(req, res) {
             });
         });
 }
-
 
 //get all categories
 export function getAllCategories(req, res) {
@@ -129,13 +129,3 @@ export function updateCategory(req, res) {
     })
 }
 
-const isAdminValid = (req) => {
-    if (!req.body.user) {
-        return false
-    }
-
-    if (req.body.user.type !== "admin") {
-        return false
-    }
-    return true
-}
