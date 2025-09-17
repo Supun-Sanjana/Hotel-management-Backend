@@ -1,26 +1,26 @@
 import Category from "../model/category.js";
 
 //Create category
-export function createCategory(req, res){
+export function createCategory(req, res) {
     if (req.body.user == null) {
         return res.status(401).json({
-            message:"Please login to create category !"
+            message: "Please login to create category !"
         })
     }
 
     const newCategory = new Category(req.body)
     newCategory.save().then(
-        (result)=>{
+        (result) => {
             res.status(201).json({
-                message:"Category created successfully",
-                result:result
+                message: "Category created successfully",
+                result: result
             })
         }
     ).catch(
-        (err)=>{
+        (err) => {
             res.json({
-                message:"Category creation failed",
-                error:err
+                message: "Category creation failed",
+                error: err
             })
         }
     )
@@ -66,16 +66,16 @@ export function deleteCategory(req, res) {
 //get all categories
 export function getAllCategories(req, res) {
     Category.find().then(
-        (list)=>{
+        (list) => {
             res.json({
-                list:list
+                list: list
             })
         }
     ).catch(
-        (err)=>{
+        (err) => {
             res.json({
-                message:"Category get failed",
-                error:err
+                message: "Category get failed",
+                error: err
             })
         }
     )
@@ -86,21 +86,21 @@ export function getCategoryByName(req, res) {
     const name = req.params.name;
 
     Category.findOne({ name }).then(
-        (category)=>{
+        (category) => {
             if (!category) {
                 return res.status(404).json({
                     message: "Category not found"
                 });
             }
             res.json({
-                category:category
+                category: category
             })
         }
     ).catch(
-        (err)=>{
+        (err) => {
             res.json({
-                message:"Category get failed",
-                error:err
+                message: "Category get failed",
+                error: err
             })
         }
     )
@@ -108,24 +108,34 @@ export function getCategoryByName(req, res) {
 
 export function updateCategory(req, res) {
 
-    const adminValid = isAdminValid(req);
-
-    if (!adminValid) {
-        res.status(403).json({
-            message:"Unautherize !"
+    if (!isAdminValid(req)) {
+       return res.status(403).json({
+            message: "Unauthorized !"
         })
     }
 
-
+    const name = req.params.name
+    Category.updateOne({name}, req.body).then(
+        ()=>{
+            res.json({
+                message:"Category created success"
+            })
+        }
+    ).catch((err)=>{
+        return res.status(500).json({
+            message: "Category creation failed !",
+            error:err.message
+        })
+    })
 }
 
-const isAdminValid = (req)=>{
+const isAdminValid = (req) => {
     if (!req.body.user) {
         return false
     }
 
     if (req.body.user.type !== "admin") {
-        return fale
+        return false
     }
     return true
 }
