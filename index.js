@@ -5,6 +5,7 @@ import userRoute from './src/router/userRoute.js';
 import galleryRouter from './src/router/galleryRoute.js';
 import categoryRouter from './src/router/categoryRoute.js';
 import jwt from "jsonwebtoken";
+import roomRouter from './src/router/roomRoute.js';
 
 dotenv.config();
 const app = express();
@@ -44,6 +45,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", userRoute);
 app.use("/api/v1/gallery", galleryRouter);
 app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/room", roomRouter);
 
 // Start server
 app.listen(PORT, () => {
