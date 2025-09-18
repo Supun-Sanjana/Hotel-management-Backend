@@ -84,3 +84,13 @@ export const isAdminValid = (req) => {
     }
     return true
 }
+
+export function isCustomerValid(req) {
+    if (!req.body.user) {
+        return false
+    }
+    if (req.body.user.type !== "user") {
+        return false
+    }
+    return true
+}
