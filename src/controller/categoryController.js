@@ -29,17 +29,17 @@ export function createCategory(req, res) {
 
 //delete category
 export function deleteCategory(req, res) {
-    if (!req.body.user) {
-        return res.status(401).json({
-            message: "Please login to delete category !"
-        });
-    }
+    // if (!req.body.user) {
+    //     return res.status(401).json({
+    //         message: "Please login to delete category !"
+    //     });
+    // }
 
-    if (req.body.user.type !== "admin") {
-        return res.status(403).json({
-            message: "You are not authorized to delete category !"
-        });
-    }
+    // if (req.body.user.type !== "admin") {
+    //     return res.status(403).json({
+    //         message: "You are not authorized to delete category !"
+    //     });
+    // }
 
     const name = req.params.name;
 
@@ -64,11 +64,11 @@ export function deleteCategory(req, res) {
 }
 
 //get all categories
-export function getAllCategories(req, res) {
+export function getAllCategories(_, res) {
     Category.find().then(
         (list) => {
             res.json({
-                list: list
+                categories: list
             })
         }
     ).catch(

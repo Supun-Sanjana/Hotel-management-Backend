@@ -43,29 +43,29 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
 
-        const { userName, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!userName || !password) {
+        if (!email || !password) {
             res.status(400).json({
                 success: false,
                 message: "Missing required fields"
             })
         }
 
-        const user = await User.findOne({ userName })
+        const user = await User.findOne({ email })
         //const credentials = req.body
-        //User.findOne({username : credentials.uername , password : credentials.password})
+        //User.findOne({email : credentials.uername , password : credentials.password})
         if (!user) return res.status(404).json({ message: "User not found !" })
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) return res.status(400).json({ success: false, message: "Invalid credentials" })
 
-        const token = jwt.sign({ id: user._id, userName, type: user.type },
+        const token = jwt.sign({ id: user._id, email, type: user.type, userName: user.userName },
             process.env.JWT_SECRET,
             { expiresIn: "72h" }
         )
 
-        return res.status(200).json({ message: "Login success", token })
+        return res.status(200).json({ message: "Login success", token, user })
 
 
     } catch (error) {
@@ -93,4 +93,16 @@ export function isCustomerValid(req) {
         return false
     }
     return true
+}
+
+export function getUser(req, res) {
+    const user = req.user
+    if (user == null) {
+        res.json({ message: "User not found" });
+    } else {
+        res.json({
+            message: "Found User",
+            User: user
+        })
+    }
 }
