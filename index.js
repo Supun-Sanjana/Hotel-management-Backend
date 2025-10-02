@@ -19,39 +19,39 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 
 // JWT middleware
-// app.use((req, res, next) => {
-//   const token = req.header("Authorization")?.replace("Bearer ", "");
+app.use((req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
-//   if (!token) return next();
+  if (!token) return next();
 
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//     if (err) {
-//       console.log("JWT verification failed:", err.message);
-//       return next();
-//     }
-//     req.user = decoded; // ✅ safe for GET/POST
-//     console.log("Decoded JWT:", decoded);
-//     next();
-//   });
-// });
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log("JWT verification failed:", err.message);
+      return next();
+    }
+    req.user = decoded; // ✅ safe for GET/POST
+    console.log("Decoded JWT:", decoded);
+    next();
+  });
+});
 
 // middleware/auth.js
 
-export function authenticate(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ message: "No token provided" });
+// export function authenticate(req, res, next) {
+//   const authHeader = req.headers["authorization"];
+//   if (!authHeader) return res.status(401).json({ message: "No token provided" });
 
-  const token = authHeader.split(" ")[1]; // Bearer token
-  if (!token) return res.status(401).json({ message: "No token provided" });
+//   const token = authHeader.split(" ")[1]; // Bearer token
+//   if (!token) return res.status(401).json({ message: "No token provided" });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // attach user to request
-    next();
-  } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
-  }
-}
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded; // attach user to request
+//     next();
+//   } catch (err) {
+//     res.status(403).json({ message: "Invalid token" });
+//   }
+// }
 
 
 

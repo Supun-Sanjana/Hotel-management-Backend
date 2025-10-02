@@ -3,7 +3,7 @@ import { isAdminValid } from "./userController.js";
 
 //Create category
 export function createCategory(req, res) {
-    if (req.body.user == null) {
+    if (req.user == null) {
         return res.status(401).json({
             message: "Please login to create category !"
         })
@@ -29,17 +29,17 @@ export function createCategory(req, res) {
 
 //delete category
 export function deleteCategory(req, res) {
-    // if (!req.body.user) {
-    //     return res.status(401).json({
-    //         message: "Please login to delete category !"
-    //     });
-    // }
+    if (!req.user) {
+        return res.status(401).json({
+            message: "Please login to delete category !"
+        });
+    }
 
-    // if (req.body.user.type !== "admin") {
-    //     return res.status(403).json({
-    //         message: "You are not authorized to delete category !"
-    //     });
-    // }
+    if (req.user.type !== "admin") {
+        return res.status(403).json({
+            message: "You are not authorized to delete category !"
+        });
+    }
 
     const name = req.params.name;
 
