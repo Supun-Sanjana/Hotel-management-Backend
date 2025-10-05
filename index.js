@@ -42,7 +42,6 @@ mongoose.connect(process.env.MONGODB_URL)
   .catch(err => console.error("❌ Error connecting to MongoDB:", err));
 
 
-const PORT = process.env.PORT || 5000;
 
 // Root route
 app.get("/", (req, res) => {
@@ -50,12 +49,15 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api/v1", userRoute);
-app.use("/api/v1/gallery", galleryRouter);
-app.use("/api/v1/category", categoryRouter);
-app.use("/api/v1/room", roomRouter);
-app.use("/api/v1/booking", bookingRouter);
-app.use("/upload", uploadRouter)
+app.use("api/v1", userRoute);
+app.use("api/v1/gallery", galleryRouter);
+app.use("api/v1/category", categoryRouter);
+app.use("api/v1/room", roomRouter);
+app.use("api/v1/booking", bookingRouter);
+app.use("upload", uploadRouter)
+
+
+const PORT = process.env.PORT || 5000;
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {
