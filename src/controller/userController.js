@@ -86,10 +86,10 @@ export const isAdminValid = (req) => {
 }
 
 export function isCustomerValid(req) {
-    if (!req.body.user) {
+    if (!req.user) {
         return false
     }
-    if (req.body.user.type !== "user") {
+    if (req.user.type !== "user") {
         return false
     }
     return true
