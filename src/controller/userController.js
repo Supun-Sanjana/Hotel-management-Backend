@@ -75,11 +75,11 @@ export const login = async (req, res) => {
 }
 
 export const isAdminValid = (req) => {
-    if (!req.body.user) {
+    if (!req.user) {
         return false
     }
 
-    if (req.body.user.type !== "admin") {
+    if (req.user.type !== "admin") {
         return false
     }
     return true

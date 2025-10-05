@@ -118,12 +118,12 @@ export function updateCategory(req, res) {
     Category.updateOne({name}, req.body).then(
         ()=>{
             res.json({
-                message:"Category created success"
+                message:"Category update success"
             })
         }
     ).catch((err)=>{
         return res.status(500).json({
-            message: "Category creation failed !",
+            message: "Category update failed !",
             error:err.message
         })
     })
