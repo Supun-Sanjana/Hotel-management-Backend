@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors())
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: ["http://localhost:5173","https://hotel-management-frontend-cfzi.vercel.app/"], credentials: true}));
 
 app.use(express.json());
 
@@ -58,6 +58,6 @@ app.use("/api/v1/booking", bookingRouter);
 app.use("/upload", uploadRouter)
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`--------> Server is running on port ${PORT}`);
 });
