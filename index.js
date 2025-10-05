@@ -35,25 +35,6 @@ app.use((req, res, next) => {
   });
 });
 
-// middleware/auth.js
-
-// export function authenticate(req, res, next) {
-//   const authHeader = req.headers["authorization"];
-//   if (!authHeader) return res.status(401).json({ message: "No token provided" });
-
-//   const token = authHeader.split(" ")[1]; // Bearer token
-//   if (!token) return res.status(401).json({ message: "No token provided" });
-
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     req.user = decoded; // attach user to request
-//     next();
-//   } catch (err) {
-//     res.status(403).json({ message: "Invalid token" });
-//   }
-// }
-
-
 
 // MongoDB
 mongoose.connect(process.env.MONGODB_URL)
@@ -61,7 +42,7 @@ mongoose.connect(process.env.MONGODB_URL)
   .catch(err => console.error("❌ Error connecting to MongoDB:", err));
 
 
-const PORT = process.env.SERVER_PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 // Root route
 app.get("/", (req, res) => {
