@@ -49,12 +49,12 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("api/v1", userRoute);
-app.use("api/v1/gallery", galleryRouter);
-app.use("api/v1/category", categoryRouter);
-app.use("api/v1/room", roomRouter);
-app.use("api/v1/booking", bookingRouter);
-app.use("upload", uploadRouter)
+app.use("/api/v1", userRoute);
+app.use("/api/v1/gallery", galleryRouter);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/room", roomRouter);
+app.use("/api/v1/booking", bookingRouter);
+app.use("/upload", uploadRouter)
 
 
 const PORT = process.env.PORT || 5000;
