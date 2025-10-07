@@ -1,4 +1,5 @@
 import Booking from "../model/booking.js";
+import Room from "../model/room.js";
 import { isCustomerValid } from "./userController.js";
 
 // ✅ Create Booking (Already done)
@@ -9,30 +10,11 @@ export function createBooking(req, res) {
 
     let startingId = 200;
 
-    console.log(startingId);
-
-    const STARTING_ID = 200;
-    console.log('file loaded — createBooking version');            // confirm the file you edited is the one running
-    console.log('initial STARTING_ID:', STARTING_ID, typeof STARTING_ID);
-
-
     Booking.findOne().sort({ bookingId: -1 })
         .then((lastBooking) => {
 
-            console.log('lastBooking raw:', lastBooking);
-            console.log('lastBooking.bookingId raw:', lastBooking?.bookingId, typeof lastBooking?.bookingId);
-
-
-
             const lastId = lastBooking ? Number(lastBooking.bookingId) : startingId;
             const newId = lastId + 1;
-
-
-            console.log('computed lastId:', lastId, typeof lastId);
-            console.log('computed newId:', newId, Number.isFinite(newId));
-
-
-
             const newBooking = new Booking({
                 bookingId: newId,
                 roomId: Number(req.body.roomId), // ensure number
@@ -193,10 +175,71 @@ export function createBookingByCategory(req, res) {
         ]
     }).then(
         (response) => {
-            res.json({
-                mesage: "Booking alrady exist",
-                result: response
-            })
+            // res.json({
+            //     mesage: "Booking alrady exist",
+            //     result: response
+            // })
+
+            const overlappingBooking = response;
+            const rooms = [];
+
+            for (let i = 0; i < overlappingBooking.length; i++) {
+                rooms.push(overlappingBooking[i].roomId)
+
+            }
+
+            Room.find({
+                roomId: { $nin: rooms },
+                category: req.body.category
+            }).then(
+                (result) => {
+                    if (rooms.length == 0) {
+                        res.json({
+                            message: "No room available",
+                            result
+                        })
+                    } else {
+                        let startingId = 200;
+
+                        Booking.findOne().sort({ bookingId: -1 })
+                            .then((lastBooking) => {
+
+                                const lastId = lastBooking ? Number(lastBooking.bookingId) : startingId;
+                                const newId = lastId + 1;
+                                const newBooking = new Booking({
+                                    bookingId: newId,
+                                    roomId: rooms[0].roomId, // ensure number
+                                    email: req.body.email,
+                                    start: new Date(start),
+                                    end: new Date(end)
+                                });
+
+                                return newBooking.save();
+                            })
+
+                            .then((result) => {
+                                res.status(201).json({
+                                    message: "Booking created successfully!",
+                                    result
+                                });
+                            })
+                            .catch((err) => {
+                                res.status(500).json({
+                                    message: "Booking creation failed!",
+                                    error: err.message
+                                });
+                            });
+                    }
+
+                }
+            ).catch(
+                (err) => {
+                    res.status(500).json({
+                        message: "Room get failed !",
+                        error: err?.message || err,
+                    })
+                }
+            )
 
         }
     )
