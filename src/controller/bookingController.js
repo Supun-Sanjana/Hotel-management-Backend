@@ -9,20 +9,41 @@ export function createBooking(req, res) {
 
     let startingId = 200;
 
-    Booking.findOne().sort({ bookingId: -1 }) // get last booking
+    console.log(startingId);
+
+    const STARTING_ID = 200;
+    console.log('file loaded — createBooking version');            // confirm the file you edited is the one running
+    console.log('initial STARTING_ID:', STARTING_ID, typeof STARTING_ID);
+
+
+    Booking.findOne().sort({ bookingId: -1 })
         .then((lastBooking) => {
-            const newId = lastBooking ? lastBooking.bookingId + 1 : startingId + 1;
+
+            console.log('lastBooking raw:', lastBooking);
+            console.log('lastBooking.bookingId raw:', lastBooking?.bookingId, typeof lastBooking?.bookingId);
+
+
+
+            const lastId = lastBooking ? Number(lastBooking.bookingId) : startingId;
+            const newId = lastId + 1;
+
+
+            console.log('computed lastId:', lastId, typeof lastId);
+            console.log('computed newId:', newId, Number.isFinite(newId));
+
+
 
             const newBooking = new Booking({
                 bookingId: newId,
-                roomId: req.body.roomId,
+                roomId: Number(req.body.roomId), // ensure number
                 email: req.body.email,
-                start: req.body.start,
-                end: req.body.end
+                start: new Date(req.body.start),
+                end: new Date(req.body.end)
             });
 
             return newBooking.save();
         })
+
         .then((result) => {
             res.status(201).json({
                 message: "Booking created successfully!",
@@ -116,4 +137,68 @@ export function deleteBooking(req, res) {
                 error: err
             });
         });
+}
+
+
+//filter date
+export function getBookingByDate(req, res) {
+    const start = req.body.start;
+    const end = req.body.end;
+
+    console.log("start:", start);
+    console.log("end:", end);
+
+    Booking.find({
+        start: {
+            $gte: new Date(start)    // grater than == gt | gte === grater than or equal
+        },
+        end: {
+            $lt: new Date(end)      //less than == lt
+        }
+    }).then(
+        (result) => {
+            res.status(200).json(result);
+        }
+    ).catch(
+        (err) => {
+            res.status(500).json({
+                message: "Fetching booking failed!",
+                error: err
+            });
+        }
+    )
+
+
+}
+
+//create booking by category
+export function createBookingByCategory(req, res) {
+    const start = new Date(req.body.start);
+    const end = new Date(req.body.end);
+
+    Booking.find({
+        $or: [{
+            start: {
+                $gte: start,
+                $lt: end
+
+            }
+        },
+        {
+            end: {
+                $gt: start,
+                $lte: end
+            }
+        }
+        ]
+    }).then(
+        (response) => {
+            res.json({
+                mesage: "Booking alrady exist",
+                result: response
+            })
+
+        }
+    )
+
 }
