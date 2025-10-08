@@ -2,6 +2,7 @@ import User from "../model/user.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 import nodemailer from 'nodemailer'
+import otp from "../model/otp.js";
 
 //register
 export const register = async (req, res) => {
@@ -28,6 +29,17 @@ export const register = async (req, res) => {
         })
 
         const savaData = await user.save()
+
+
+        const genOtp = Math.floor(1000 + Math.random() * 9000);
+        const newotp = new otp({
+            email: user.email,
+            otp: genOtp
+        })
+
+        newotp.save()
+         sendOtpEmail(user.email, genOtp)
+
         res.status(201).json({
             success: true,
             message: "User saved success !"
@@ -108,8 +120,7 @@ export function getUser(req, res) {
 }
 
 //send email
-export function sendSampleEmail(req, res) {
-    const email = req.body.email
+export function sendOtpEmail(email, otp) {
 
     const transport = nodemailer.createTransport({
         service: 'gmail',
@@ -125,17 +136,17 @@ export function sendSampleEmail(req, res) {
     const mesage = {
         from: "luxespherelk@gmail.com",
         to: email,
-        subject: "Luxesphere sample",
-        text: "Luxesphere"
+        subject: "Validating OTP",
+        text: "Your OTP is " + otp
     }
 
     transport.sendMail(mesage, (err, info) => {
         if (err) {
             console.log(err);
-            res.status(500).json({ message: "Error sending email", error: err })
+
         } else {
             console.log(info);
-            res.status(200).json({ message: "Email sent successfully" })
+
         }
     })
 }
