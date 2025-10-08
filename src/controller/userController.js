@@ -1,7 +1,7 @@
 import User from "../model/user.js";
-
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
+import nodemailer from 'nodemailer'
 
 //register
 export const register = async (req, res) => {
@@ -105,4 +105,37 @@ export function getUser(req, res) {
             User: user
         })
     }
+}
+
+//send email
+export function sendSampleEmail(req, res) {
+    const email = req.body.email
+
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+            user: "luxespherelk@gmail.com",
+            pass: "czpb rxke oyqw vvan"
+        }
+    })
+
+    const mesage = {
+        from: "luxespherelk@gmail.com",
+        to: email,
+        subject: "Luxesphere sample",
+        text: "Luxesphere"
+    }
+
+    transport.sendMail(mesage, (err, info) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ message: "Error sending email", error: err })
+        } else {
+            console.log(info);
+            res.status(200).json({ message: "Email sent successfully" })
+        }
+    })
 }
