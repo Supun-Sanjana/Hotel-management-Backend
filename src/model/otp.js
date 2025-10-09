@@ -9,10 +9,15 @@ const otpSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    date:{
+    date: {
         type: Date,
         default: Date.now
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 120, // ⏰ Automatically deletes document after 2 minutes
+    },
 });
 
 const otp = mongoose.model("otp", otpSchema);

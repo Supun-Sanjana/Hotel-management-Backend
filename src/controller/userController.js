@@ -7,7 +7,7 @@ import otp from "../model/otp.js";
 //register
 export const register = async (req, res) => {
     try {
-        const { firstName, lastName, userName, email, password } = req.body
+        const { firstName, lastName, userName, email, password , type, image} = req.body
 
         if (!firstName || !userName || !email || !password) {
             res.status(400).json({
@@ -25,7 +25,8 @@ export const register = async (req, res) => {
             userName,
             email,
             password: hashPassword,
-            type: req.body.type
+            type,
+            image
         })
 
         const savaData = await user.save()
@@ -38,7 +39,7 @@ export const register = async (req, res) => {
         })
 
         newotp.save()
-         sendOtpEmail(user.email, genOtp)
+        sendOtpEmail(user.email, genOtp)
 
         res.status(201).json({
             success: true,
@@ -107,6 +108,7 @@ export function isCustomerValid(req) {
     return true
 }
 
+//get user
 export function getUser(req, res) {
     const user = req.user
     if (user == null) {
@@ -117,6 +119,13 @@ export function getUser(req, res) {
             User: user
         })
     }
+}
+
+//getall users
+export function getAllUsers(req, res) {
+    User.find().then((result) => {
+        res.json(result)
+    })
 }
 
 //send email
@@ -150,3 +159,48 @@ export function sendOtpEmail(email, otp) {
         }
     })
 }
+
+//validate otp
+export function verifyUserEmail(req, res) {
+    const email = req.body.email
+    const Otp = req.body.otp
+
+    otp.find({ email: email }).sort({ date: -1 }).then((otpList) => {
+        if (otpList.length == 0) {
+            res.json({ message: "OTP is invalid" })
+
+        } else {
+            const lastOtp = otpList[0]
+            if (lastOtp.otp == Otp) {
+                User.findOneAndUpdate({ email: email }, { emailVerified: true }).then(() => {
+                    res.json({ message: "OTP is verified successfully" })
+                })
+
+            } else {
+                res.json({ message: "OTP is invalid" })
+            }
+        }
+    })
+}
+
+// resend otp
+export const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const genOtp = Math.floor(1000 + Math.random() * 9000);
+
+    // Remove any old OTPs for that email
+    await otp.deleteMany({ email });
+
+    // Create and save new OTP
+    await new otp({ email, otp: genOtp }).save();
+
+    // Send email again
+    await sendOtpEmail(email, genOtp);
+
+    res.json({ message: "New OTP sent successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to resend OTP" });
+  }
+};
