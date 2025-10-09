@@ -132,6 +132,17 @@ export function getAllUsers(req, res) {
         });
 }
 
+//delete user
+export function deleteUser(req, res) {
+    User.findByIdAndDelete(req.params.id)
+        .then((result) => {
+            res.json({ message: "User deleted" });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: err.message });
+        });
+}
+
 // PATCH /api/v1/users/:id/toggle
 export const toggleUserDisabled = async (req, res) => {
   try {

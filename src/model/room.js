@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const roomSchema = new mongoose.Schema({
     roomId: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },

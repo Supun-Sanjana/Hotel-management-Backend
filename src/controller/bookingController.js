@@ -3,49 +3,68 @@ import Room from "../model/room.js";
 import { isCustomerValid } from "./userController.js";
 
 // ✅ Create Booking (Already done)
-export function createBooking(req, res) {
+export async function createBooking(req, res) {
+  try {
     if (!isCustomerValid(req)) {
-        return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: "Forbidden" });
     }
 
+    const { roomId, email, start, end } = req.body;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    // ✅ Step 1: Check if room is already booked for this period
+    const conflictingBooking = await Booking.findOne({
+      roomId,
+      $or: [
+        { start: { $lte: endDate }, end: { $gte: startDate } } // overlapping range
+      ],
+    });
+
+    if (conflictingBooking) {
+      return res.status(400).json({
+        message: "Room already booked for the selected dates!",
+        conflictingBooking,
+      });
+    }
+
+    // ✅ Step 2: Generate new bookingId
     let startingId = 200;
+    const lastBooking = await Booking.findOne().sort({ bookingId: -1 });
+    const lastId = lastBooking ? Number(lastBooking.bookingId) : startingId;
+    const newId = lastId + 1;
 
-    Booking.findOne().sort({ bookingId: -1 })
-        .then((lastBooking) => {
+    // ✅ Step 3: Create booking
+    const newBooking = new Booking({
+      bookingId: newId,
+      roomId: Number(roomId),
+      email,
+      start: startDate,
+      end: endDate,
+    });
 
-            const lastId = lastBooking ? Number(lastBooking.bookingId) : startingId;
-            const newId = lastId + 1;
-            const newBooking = new Booking({
-                bookingId: newId,
-                roomId: Number(req.body.roomId), // ensure number
-                email: req.body.email,
-                start: new Date(req.body.start),
-                end: new Date(req.body.end)
-            });
+    const result = await newBooking.save();
 
-            return newBooking.save();
-        })
+    res.status(201).json({
+      message: "Booking created successfully!",
+      result,
+    });
 
-        .then((result) => {
-            res.status(201).json({
-                message: "Booking created successfully!",
-                result
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({
-                message: "Booking creation failed!",
-                error: err.message
-            });
-        });
+  } catch (err) {
+    res.status(500).json({
+      message: "Booking creation failed!",
+      error: err.message,
+    });
+  }
 }
+
 
 
 // ✅ Read All Bookings
 export function getAllBookings(req, res) {
     Booking.find()
         .then((bookings) => {
-            res.status(200).json(bookings);
+            res.status(200).json({list : bookings});
         })
         .catch((err) => {
             res.status(500).json({
@@ -244,4 +263,32 @@ export function createBookingByCategory(req, res) {
         }
     )
 
+}
+
+
+//update status
+export function updateStatus(req, res) {
+  const bookingId = req.params.id;  // from URL like /update-status/201
+  const { status } = req.body;      // from frontend
+
+  Booking.findOneAndUpdate(
+    { bookingId },                  // find by bookingId
+    { status },                     // update only the status
+    { new: true }                   // return the updated document
+  )
+    .then((updatedBooking) => {
+      if (!updatedBooking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      res.status(200).json({
+        message: "Booking updated successfully!",
+        updatedBooking,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        message: "Updating booking failed!",
+        error: err.message,
+      });
+    });
 }

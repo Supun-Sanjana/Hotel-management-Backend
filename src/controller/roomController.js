@@ -1,29 +1,45 @@
 import Room from "../model/room.js";
 import { isAdminValid } from "./userController.js";
 
-//create room
-export function createRoom(req, res) {
-    if (!isAdminValid(req)) {
-        return res.status(403).json({
-            message: "Forbidden"
-        })
-    }
 
-    const newRoom = new Room(req.body).save().then(
-        (result) => {
-            return res.json({
-                message: "Room created success",
-                result
-            })
-        }
-    ).catch(
-        (err) => {
-            return res.status(500).json({
-                message: "Room creation failed !",
-                error: err?.message || err,
-            })
-        }
-    )
+export async function createRoom(req, res) {
+  // 1️⃣ Check admin permission
+  if (!isAdminValid(req)) {
+    return res.status(403).json({ message: "Forbidden: Admins only" });
+  }
+
+  const { category, maxGuests, available, price, image, description, notes } = req.body;
+
+  if (!category || !price) {
+    return res.status(400).json({ message: "Category and price are required." });
+  }
+
+  const roomId = "RM" + Date.now();
+
+  try {
+    const newRoom = new Room({
+      roomId,
+      category,
+      maxGuests: maxGuests || 3,
+      available: available !== undefined ? available : true,
+      price,
+      image: Array.isArray(image) ? image : [image],
+      description: description || "No description",
+      notes: notes || "",
+    });
+
+    const result = await newRoom.save();
+
+    return res.status(201).json({
+      message: "Room created successfully!",
+      result,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Room creation failed!",
+      error: err?.message || err,
+    });
+  }
 }
 
 //delete room
@@ -81,7 +97,7 @@ export function getAllRooms(req, res){
     Room.find().then(
         (rooms)=>{
             return res.json({
-                rooms
+                list : rooms
             })
         }
     ).catch(
