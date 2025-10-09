@@ -7,7 +7,7 @@ import otp from "../model/otp.js";
 //register
 export const register = async (req, res) => {
     try {
-        const { firstName, lastName, userName, email, password , type, image} = req.body
+        const { firstName, lastName, userName, email, password, type, image } = req.body
 
         if (!firstName || !userName || !email || !password) {
             res.status(400).json({
@@ -123,10 +123,27 @@ export function getUser(req, res) {
 
 //getall users
 export function getAllUsers(req, res) {
-    User.find().then((result) => {
-        res.json(result)
-    })
+    User.find()
+        .then((result) => {
+            res.json({ list: result }); // wrapped in an object
+        })
+        .catch((err) => {
+            res.status(500).json({ message: err.message });
+        });
 }
+
+// PATCH /api/v1/users/:id/toggle
+export const toggleUserDisabled = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    user.disabled = !user.disabled;
+    await user.save();
+    res.json({ success: true, disabled: user.disabled });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 //send email
 export function sendOtpEmail(email, otp) {
@@ -185,22 +202,22 @@ export function verifyUserEmail(req, res) {
 
 // resend otp
 export const resendOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const genOtp = Math.floor(1000 + Math.random() * 9000);
+    try {
+        const { email } = req.body;
+        const genOtp = Math.floor(1000 + Math.random() * 9000);
 
-    // Remove any old OTPs for that email
-    await otp.deleteMany({ email });
+        // Remove any old OTPs for that email
+        await otp.deleteMany({ email });
 
-    // Create and save new OTP
-    await new otp({ email, otp: genOtp }).save();
+        // Create and save new OTP
+        await new otp({ email, otp: genOtp }).save();
 
-    // Send email again
-    await sendOtpEmail(email, genOtp);
+        // Send email again
+        await sendOtpEmail(email, genOtp);
 
-    res.json({ message: "New OTP sent successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to resend OTP" });
-  }
+        res.json({ message: "New OTP sent successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to resend OTP" });
+    }
 };
