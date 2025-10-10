@@ -67,6 +67,7 @@ export function getAllBookings(req, res) {
             res.status(200).json({list : bookings});
         })
         .catch((err) => {
+            console.error(err);
             res.status(500).json({
                 message: "Fetching bookings failed!",
                 error: err
