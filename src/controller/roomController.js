@@ -14,11 +14,13 @@ export async function createRoom(req, res) {
     return res.status(400).json({ message: "Category and price are required." });
   }
 
-  const roomId = "RM" + Date.now();
-
   try {
+    // 2️⃣ Find the last created room and increment its ID
+    const lastRoom = await Room.findOne().sort({ roomId: -1 }).exec();
+    const nextId = lastRoom ? parseInt(lastRoom.roomId) + 1 : 101;
+
     const newRoom = new Room({
-      roomId,
+      roomId: nextId.toString(),
       category,
       maxGuests: maxGuests || 3,
       available: available !== undefined ? available : true,
@@ -41,6 +43,7 @@ export async function createRoom(req, res) {
     });
   }
 }
+
 
 //delete room
 export function deleteRoom(req, res){

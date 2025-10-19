@@ -5,9 +5,9 @@ import { isCustomerValid } from "./userController.js";
 // ✅ Create Booking (Already done)
 export async function createBooking(req, res) {
   try {
-    if (!isCustomerValid(req)) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // if (!isCustomerValid(req)) {
+    //   return res.status(403).json({ message: "Forbidden" });
+    // }
 
     const { roomId, email, start, end } = req.body;
     const startDate = new Date(start);

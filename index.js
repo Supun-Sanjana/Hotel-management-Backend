@@ -29,7 +29,7 @@ app.use((req, res, next) => {
       console.log("JWT verification failed:", err.message);
       return next();
     }
-    req.user = decoded; // ✅ safe for GET/POST
+    req.user = decoded; 
     console.log("Decoded JWT:", decoded);
     next();
   });
