@@ -1,0 +1,7 @@
+MONGODB_URL="mongodb+srv://supun:eHSqcln3RusT6u7c@cluster0.nhzn6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+
+JWT_SECRET=uiyctg875ctnfyuegrsnut56rchngy43e6trigvc86gdyuhrt6vj7crty872mtyceytg4hngc87ntr3gtnfb2376br
+
+CLOUDINARY_NAME=Root
+CLOUDINARY_API_KEY=926695619362219
+CLOUDINARY_API_SECRET=QAyc6xVt0rRUZXVIC3ZR4SbYRto
