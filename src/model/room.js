@@ -15,7 +15,7 @@ const roomSchema = new mongoose.Schema({
         required: true,
         default: 3
     },
-    availble: {
+    available: {
         type: Boolean,
         default: true,
         required: true

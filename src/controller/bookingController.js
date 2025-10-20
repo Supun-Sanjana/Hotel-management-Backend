@@ -147,6 +147,7 @@ export function getBookingByDate(req, res) {
     const start = req.body.start;
     const end = req.body.end;
 
+
     console.log("start:", start);
     console.log("end:", end);
 
@@ -292,4 +293,64 @@ export function updateStatus(req, res) {
         error: err.message,
       });
     });
+}
+
+
+// filter available rooms by date and category
+export async function getAvailableRoomsByDateAndCategory(req, res) {
+  try {
+    const { start, end, category } = req.body;
+
+    // 1️⃣ Find all bookings that overlap with given date range
+    const overlappingBookings = await Booking.find({
+      $or: [
+        { start: { $lte: new Date(end) }, end: { $gte: new Date(start) } }
+      ],
+    });
+
+    // 2️⃣ Collect booked roomIds
+    const bookedRoomIds = overlappingBookings.map(b => b.roomId);
+
+    // 3️⃣ Find rooms that are NOT booked and match category
+    const availableRooms = await Room.find({
+      roomId: { $nin: bookedRoomIds },
+      category,
+    });
+
+    // 4️⃣ Send available rooms
+    res.status(200).json({
+      message: "Available rooms fetched successfully",
+      rooms: availableRooms,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to fetch available rooms",
+      error: err.message,
+    });
+  }
+}
+
+
+//get booking by user
+export async function getUserBookings(req, res) {
+  try {
+    const email = req.params.email; // or req.user.email if using auth
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Find all bookings for this user
+    const bookings = await Booking.find({ email: email }); // ✅ returns an array
+
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found for this user" });
+    }
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message || "Server error" });
+  }
 }

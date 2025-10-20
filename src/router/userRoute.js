@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, getUser, verifyUserEmail, getAllUsers, toggleUserDisabled, deleteUser } from '../controller/userController.js'
+import { register, login, getUser, verifyUserEmail, getAllUsers, toggleUserDisabled, deleteUser, updateUser } from '../controller/userController.js'
 
 const userRoute = express.Router()
 
@@ -10,5 +10,6 @@ userRoute.get('/get-all', getAllUsers)
 userRoute.patch('/:id/toggle', toggleUserDisabled)
 userRoute.post('/verify-email', verifyUserEmail)
 userRoute.delete('/delete-user/:id' , deleteUser)
+userRoute.put('/update/:email', updateUser);
 
 export default userRoute
