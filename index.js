@@ -9,6 +9,7 @@ import roomRouter from './src/router/roomRoute.js';
 import bookingRouter from './src/router/bookingRoute.js';
 import cors from "cors"
 import uploadRouter from './src/router/upload.js';
+import feedbackRoute from './src/router/feedbackRoute.js';
 
 dotenv.config();
 const app = express();
@@ -52,6 +53,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", userRoute);
 app.use("/api/v1/gallery", galleryRouter);
 app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/feedback", feedbackRoute);
 app.use("/api/v1/room", roomRouter);
 app.use("/api/v1/booking", bookingRouter);
 app.use("/upload", uploadRouter)
