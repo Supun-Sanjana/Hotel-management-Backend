@@ -42,6 +42,7 @@ export function deleteCategory(req, res) {
     }
 
     const name = req.params.name;
+  
 
     Category.findOneAndDelete({ name })
         .then((deletedCategory) => {

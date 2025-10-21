@@ -32,3 +32,36 @@ export async function getAllFeedback(req, res) {
     }
 }
 
+//get feedback by email
+export async function getFeedbackByEmail(req, res) {
+    try {
+        const {email} = req.params
+    if (!email) {
+       return res.status(400).json({message:"email is required"})
+    }
+
+    const list =await FeedBack.find({email})
+    res.status(200).json({list})
+
+    } catch (error) {
+        res.status(500).json({message:"failed to fetch feedbacks" + error.message})
+        console.log(error);
+        
+    }
+}
+
+//delete by id
+export async function deleteById(req, res) {
+  try {
+    const {id} = req.params
+  if (!id) {
+    return res.status(400).json({message:"id is required"})
+  }
+
+  await FeedBack.findByIdAndDelete(id)
+  res.status(200).json({message:"deleted"})
+
+  } catch (error) {
+    res.status(500).json({mesage:"failed to delet feedback" + error.message})
+  }
+}
